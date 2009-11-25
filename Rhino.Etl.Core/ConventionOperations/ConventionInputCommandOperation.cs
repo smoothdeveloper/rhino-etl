@@ -10,6 +10,7 @@ namespace Rhino.Etl.Core.ConventionOperations
     public class ConventionInputCommandOperation : InputCommandOperation
     {
         private string command;
+        private int timeout;
 
         /// <summary>
         /// Gets or sets the command to get the input from the database
@@ -20,12 +21,22 @@ namespace Rhino.Etl.Core.ConventionOperations
             set { command = value; }
         }
 
+        ///<summary>
+        /// Gets or sets the timeout value for the database command
+        ///</summary>
+        public int Timeout
+        {
+            get { return timeout;  }
+            set { timeout = value; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConventionInputCommandOperation"/> class.
         /// </summary>
         /// <param name="connectionStringName">Name of the connection string.</param>
         public ConventionInputCommandOperation(string connectionStringName) : base(connectionStringName)
         {
+            Timeout = 30;
         }
 
         /// <summary>
@@ -45,6 +56,7 @@ namespace Rhino.Etl.Core.ConventionOperations
         protected override void PrepareCommand(IDbCommand cmd)
         {
             cmd.CommandText = Command;
+            cmd.CommandTimeout = Timeout;
         }
     }
 }
