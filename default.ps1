@@ -9,7 +9,7 @@ properties {
   $tools_dir = "$base_dir\Tools"
   $release_dir = "$base_dir\Release"
   $uploadCategory = "Rhino-ETL"
-  $uploadScript = "C:\Builds\Upload\PublishBuild.build"
+  $uploader = "..\Uploader\S3Uploader.exe"
 } 
 
 task default -depends Release
@@ -64,17 +64,20 @@ task Init -depends Clean {
 		
 	new-item $release_dir -itemType directory 
 	new-item $buildartifacts_dir -itemType directory 
-	cp $tools_dir\MbUnit\*.* $build_dir
+	cp $tools_dir\XUnit\*.* $build_dir
 } 
 
 task Compile -depends Init { 
-  exec msbuild "/p:OutDir=""$buildartifacts_dir "" $sln_file"
+  & msbuild "$sln_file" "/p:OutDir=$build_dir\\" /p:Configuration=Release
+  if ($lastExitCode -ne 0) {
+        throw "Error: Failed to execute msbuild"
+  }
 } 
 
 task Test -depends Compile {
   $old = pwd
   cd $build_dir
-  &.\MbUnit.Cons.exe /rf:$build_dir /rnf:TestResults /rt:Html "$build_dir\Rhino.Etl.Tests.dll"
+  &.\xunit.console.exe "$build_dir\Rhino.Etl.Tests.dll"
   if ($lastExitCode -ne 0) {
         throw "Error: Failed to execute tests"
     }
@@ -86,8 +89,8 @@ task Release -depends Test {
 		$build_dir\Rhino.Etl.Core.dll `
 		$build_dir\Rhino.Etl.Dsl.dll `
 		$build_dir\Rhino.Etl.Cmd.exe `
-		$build_dir\Rhino.Etl.Core.xml `
-		$build_dir\Rhino.Etl.Dsl.xml `
+		Rhino.Etl.Core\Rhino.Etl.Core.xml `
+		Rhino.Etl.Dsl\Rhino.Etl.Dsl.xml `
 		$build_dir\Boo.* `
 		$build_dir\FileHelpers.dll `
 		license.txt `
@@ -97,12 +100,17 @@ task Release -depends Test {
     }
 }
 
-task Upload -depend Release {
-	if (Test-Path $uploadScript ) {
-		$log = git log -n 1 --oneline		
-		msbuild $uploadScript /p:Category=$uploadCategory "/p:Comment=$log" "/p:File=$release_dir\Rhino.ETL-$humanReadableversion-Build-$env:ccnetnumericlabel.zip"
+task Upload -depends Release {
+	Write-Host "Starting upload"
+	if (Test-Path $uploader) {
+		$log = $env:push_msg 
+    if($log -eq $null -or $log.Length -eq 0) {
+      $log = git log -n 1 --oneline		
+    }
+		&$uploader "$uploadCategory" "$release_dir\Rhino.Etl-$humanReadableversion-Build-$env:ccnetnumericlabel.zip" "$log"
 		
 		if ($lastExitCode -ne 0) {
+      write-host "Failed to upload to S3: $lastExitCode"
 			throw "Error: Failed to publish build"
 		}
 	}
