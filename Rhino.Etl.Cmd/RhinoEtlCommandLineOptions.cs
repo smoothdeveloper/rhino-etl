@@ -11,8 +11,8 @@ namespace Rhino.Etl.Cmd
         [Option("Configurationname", ShortForm = "c", MinOccurs = 0, MaxOccurs = 1)]
         public string Configuration;
         [Option("Process name", ShortForm = "p", MinOccurs = 0, MaxOccurs = 1)]
-        public string Process;
-        [Option("Verbse logging", ShortForm = "v", MaxOccurs = 1)]
+        public string Process;        
+        [Option("Verbose logging", ShortForm = "v", MaxOccurs = 1)]
         public bool Verbose = false;
     }
 }
