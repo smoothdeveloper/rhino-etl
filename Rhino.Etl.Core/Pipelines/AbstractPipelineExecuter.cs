@@ -33,12 +33,18 @@ namespace Rhino.Etl.Core.Pipelines
                 }
                 catch (Exception e)
                 {
-                    Error(e, "Failed to execute pipeline {0}", pipelineName);
+                    string errorMessage = string.Format("Failed to execute pipeline {0}", pipelineName);
+                    Error(e, errorMessage);
+                    throw new PipelineExecutionException(errorMessage, e);
                 }
+            }
+            catch(PipelineExecutionException)
+            {                
+                throw;
             }
             catch (Exception e)
             {
-                Error(e, "Failed to create pipeline {0}", pipelineName);
+                Error(e, "Failed to create pipeline {0}", pipelineName);                
             }
 
             DisposeAllOperations(pipeline);
