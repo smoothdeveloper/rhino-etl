@@ -113,6 +113,7 @@
     <Compile Include="Operations\PartialProcessOperation.cs" />
     <Compile Include="Operations\SqlBatchOperation.cs" />
     <Compile Include="Pipelines\PipelineExecutionException.cs" />
+    <Compile Include="Pipelines\SingleThreadedNonCachedPipelineExecuter.cs" />
     <Compile Include="Pipelines\ThreadPoolPipelineExecuter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Operations\SqlBulkInsertOperation.cs" />
