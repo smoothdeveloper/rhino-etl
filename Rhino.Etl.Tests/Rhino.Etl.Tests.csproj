@@ -150,6 +150,7 @@
     <Compile Include="Joins\ComplexUsersToPeopleJoinProcess.cs" />
     <Compile Include="Joins\FullJoinUsersToPeopleByEmail.cs" />
     <Compile Include="Joins\GenericEnumerableOperation.cs" />
+    <Compile Include="Joins\InlineJoinOperationEnsureMergerReturnsNewRowTestFixture.cs" />
     <Compile Include="Joins\InnerJoinUsersToPeopleByEmail.cs" />
     <Compile Include="Joins\JoinFixture.cs" />
     <Compile Include="Joins\JoinInProcessFixture.cs" />
